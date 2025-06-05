@@ -189,3 +189,11 @@ Access these metrics through:
 ## Next Steps
 
 After configuring and testing uplink capabilities, proceed to [Customer-Provided Ephemeris](05-customer-provided-ephemeris.md) to learn how to use custom ephemeris data with AWS Ground Station Digital Twin.
+
+## AWS Documentation References
+
+- [AWS Ground Station Uplink Configuration](https://docs.aws.amazon.com/ground-station/latest/ug/uplink-ec.html)
+- [AWS Ground Station Dataflow Endpoint Groups](https://docs.aws.amazon.com/ground-station/latest/ug/dataflow-endpoint-groups.html)
+- [AWS Ground Station Contact Scheduling](https://docs.aws.amazon.com/ground-station/latest/ug/contact-scheduling.html)
+- [AWS Ground Station CloudWatch Metrics](https://docs.aws.amazon.com/ground-station/latest/ug/monitoring-cloudwatch.html)
+- [AWS Ground Station Config Types](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ConfigTypeData.html)

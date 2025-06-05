@@ -45,3 +45,10 @@ Before proceeding with onboarding, gather the following information:
 ## Next Steps
 
 Once you have confirmed all prerequisites are met, proceed to the [Onboarding](02-onboarding.md) section to begin setting up AWS Ground Station Digital Twin for your account.
+
+## AWS Documentation References
+
+- [AWS Ground Station User Guide](https://docs.aws.amazon.com/ground-station/latest/ug/what-is-aws-ground-station.html)
+- [AWS Ground Station Service Quotas](https://docs.aws.amazon.com/general/latest/gr/groundstation.html)
+- [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html#groundstation_region)
+- [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)

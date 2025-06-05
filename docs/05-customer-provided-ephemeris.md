@@ -245,3 +245,11 @@ aws groundstation create-digital-twin-simulation \
 ## Next Steps
 
 After learning how to use customer-provided ephemeris, proceed to [Troubleshooting](06-troubleshooting.md) to understand how to diagnose and resolve common issues with AWS Ground Station Digital Twin.
+
+## AWS Documentation References
+
+- [AWS Ground Station Ephemeris Management](https://docs.aws.amazon.com/ground-station/latest/ug/ephemeris.html)
+- [AWS Ground Station API Reference - Register Ephemeris](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_RegisterEphemeris.html)
+- [AWS Ground Station API Reference - Describe Ephemeris](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_DescribeEphemeris.html)
+- [CCSDS Orbit Data Messages Standard](https://public.ccsds.org/Pubs/502x0b2c1.pdf)
+- [AWS Ground Station Simulation Parameters](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_CreateDigitalTwinSimulation.html)

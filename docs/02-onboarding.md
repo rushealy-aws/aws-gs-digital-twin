@@ -164,3 +164,10 @@ After completing the onboarding steps:
 ## Next Steps
 
 After successful onboarding, proceed to [Using AWS Ground Station Digital Twin](03-using-digital-twin.md) to learn how to create and manage simulations.
+
+## AWS Documentation References
+
+- [AWS Ground Station Getting Started Guide](https://docs.aws.amazon.com/ground-station/latest/ug/getting-started.html)
+- [AWS Ground Station IAM Permissions](https://docs.aws.amazon.com/ground-station/latest/ug/auth-and-access-control.html)
+- [AWS Ground Station Dataflow Endpoint Groups](https://docs.aws.amazon.com/ground-station/latest/ug/dataflow-endpoint-groups.html)
+- [AWS Ground Station VPC Requirements](https://docs.aws.amazon.com/ground-station/latest/ug/dataflow-endpoint-groups.html#dataflow-endpoint-groups-vpc)

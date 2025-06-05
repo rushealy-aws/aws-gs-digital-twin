@@ -178,3 +178,11 @@ After familiarizing yourself with the basic usage of AWS Ground Station Digital 
 
 - [Uplink Configuration](04-uplink-configuration.md) to learn how to set up and use uplink capabilities
 - [Customer-Provided Ephemeris](05-customer-provided-ephemeris.md) to understand how to work with custom ephemeris data
+
+## AWS Documentation References
+
+- [AWS Ground Station API Reference](https://docs.aws.amazon.com/ground-station/latest/APIReference/Welcome.html)
+- [AWS Ground Station CLI Reference](https://docs.aws.amazon.com/cli/latest/reference/groundstation/index.html)
+- [AWS Ground Station Mission Profiles](https://docs.aws.amazon.com/ground-station/latest/ug/mission-profiles.html)
+- [AWS Ground Station Config Profiles](https://docs.aws.amazon.com/ground-station/latest/ug/config-profiles.html)
+- [AWS Ground Station Monitoring with CloudWatch](https://docs.aws.amazon.com/ground-station/latest/ug/monitoring.html)
