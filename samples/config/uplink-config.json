@@ -1,0 +1,29 @@
+{
+  "configData": {
+    "uplinkEchoConfig": {
+      "antennaUplinkConfig": {
+        "targetEirp": {
+          "units": "dBW",
+          "value": 20.0
+        },
+        "transmitDisabled": false,
+        "spectrumConfig": {
+          "centerFrequency": {
+            "units": "MHz",
+            "value": 2075.0
+          },
+          "polarization": "RIGHT_HAND",
+          "bandwidth": {
+            "units": "MHz",
+            "value": 30.0
+          }
+        }
+      }
+    }
+  },
+  "name": "ExampleUplinkConfig",
+  "tags": {
+    "Purpose": "DigitalTwinTesting",
+    "Environment": "Development"
+  }
+}

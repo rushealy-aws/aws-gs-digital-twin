@@ -1,0 +1,19 @@
+{
+  "name": "ExampleMissionProfile",
+  "contactPrePassDurationSeconds": 120,
+  "contactPostPassDurationSeconds": 120,
+  "minimumViableContactDurationSeconds": 300,
+  "trackingConfig": {
+    "autotrack": "PREFERRED"
+  },
+  "dataflowEdges": [
+    {
+      "source": "downlinkDemodDecodeConfig",
+      "destination": "s3RecordingConfig"
+    },
+    {
+      "source": "uplinkConfig",
+      "destination": "antennaUplinkConfig"
+    }
+  ]
+}
