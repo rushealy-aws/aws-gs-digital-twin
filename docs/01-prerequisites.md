@@ -120,16 +120,23 @@ aws groundstation list-satellites --profile groundstation-dev
 - Familiarity with AWS services and IAM permissions
 - Understanding of ephemeris data formats and parameters
 
-## Supported Regions
+## Supported Antenna Regions
 
-AWS Ground Station Digital Twin is available in the following AWS regions:
+AWS Ground Station Digital Twin supports the following antenna locations:
 
-- US East (Ohio) - us-east-2
-- US West (Oregon) - us-west-2
-- Europe (Ireland) - eu-west-1
-- Asia Pacific (Sydney) - ap-southeast-2
+- Middle East (Bahrain)
+- Asia Pacific (Singapore)
+- Europe (Stockholm)
+- Africa (Cape Town)
+- US West (Hawaii)
+- US West (Alaska)
+- US West (Oregon)
+- US East (Ohio)
+- South America (Punta Arenas, Chile)
+- Australia (Dubbo)
+- Europe (Ireland)
 
-Ensure that your AWS account is configured to use one of these regions when working with Ground Station Digital Twin.
+When configuring your Digital Twin simulations, ensure you select antenna locations from this list for accurate testing and validation.
 
 ## Required Information
 
