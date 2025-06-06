@@ -1,4 +1,4 @@
-# AWS Ground Station Digital Twin - Getting Started Guide
+# AWS Ground Station Digital Twin Getting Started Guide
 
 This repository contains comprehensive documentation for getting started with AWS Ground Station Digital Twin, including onboarding steps, usage guides for uplink and customer-provided ephemeris, and detailed troubleshooting procedures.
 
