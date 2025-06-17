@@ -34,6 +34,6 @@ This repository contains comprehensive documentation for getting started with AW
 
 ## Introduction
 
-AWS Ground Station Digital Twin is a service that allows you to test and validate your satellite communications workflows in a simulated environment before deploying to production. This guide will help you get started with the service, configure uplink capabilities, work with customer-provided ephemeris data, and troubleshoot common issues.
+AWS Ground Station Digital Twin is a feature of the AWS Ground Station service that allows you to test and validate your satellite communications workflows in a simulated environment before deploying to production. This guide helps you get started with the AWS Ground Station service, configure uplink capabilities, work with customer-provided ephemeris (CPE) data, and troubleshoot common issues.
 
 For more detailed information, refer to the specific documentation sections in this repository.
