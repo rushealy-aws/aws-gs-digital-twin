@@ -366,7 +366,7 @@ Refer to the official AWS documentation:
 ### AWS Forums
 
 Post questions on the AWS forums:
-- [AWS Ground Station Forum](https://forums.aws.amazon.com/forum.jspa?forumID=328)
+- [AWS Ground Station Forum](https://repost.aws/tags/TA8gWZBnR1SPWDvlHqMrBMKQ/aws-ground-station)
 
 ## Best Practices for Troubleshooting
 
