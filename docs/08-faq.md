@@ -116,10 +116,9 @@ Digital Twin provides several ways to validate uplink command processing:
 
 ### 18. What ephemeris formats are supported?
 
-AWS Ground Station Digital Twin supports the following ephemeris formats:
+The Customer-Provided Ephemeris feature of AWS Ground Station Digital Twin supports the following ephemeris formats:
 - OEM (Orbit Ephemeris Message)
 - TLE (Two-Line Element Set)
-- CPE (Customer-Provided Ephemeris)
 
 ### 19. How often should I update ephemeris data?
 
