@@ -9,6 +9,7 @@ All notable changes to the AWS Ground Station Digital Twin Guide.
 - **Documentation**: Completely revised all documentation to align with current AWS Ground Station documentation
 - **FAQ**: Numbered all questions (1-33) for easier reference
 - **Orbital Support**: Removed references to GEO (Geostationary Orbit) and HEO (Highly Elliptical Orbit) simulations, focusing on LEO and MEO
+- **Frequency Bands**: Removed all references to Ka-band, focusing on S-band and X-band support
 - **Contact Availability**: Removed any references to contacts being unavailable, as this does not occur with Digital Twin
 
 ### Updated Files
