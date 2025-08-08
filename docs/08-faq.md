@@ -147,7 +147,7 @@ If your simulation fails to start:
 1. Check the error message in the AWS Ground Station console
 2. Verify that all required resources (satellite, mission profile, etc.) exist
 3. Ensure your IAM role has the necessary permissions
-4. Validate that your ephemeris data is correctly formatted
+4. Validate that you have a valid ephemeris at the time of the simulation.
 5. Check that your start and end times are valid
 
 ### 23. How can I diagnose dataflow issues?
