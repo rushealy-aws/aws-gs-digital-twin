@@ -44,7 +44,6 @@ The service can simulate communications with satellites of various sizes and cap
 AWS Ground Station Digital Twin supports simulations across multiple frequency bands, including:
 - S-band (2-4 GHz)
 - X-band (8-12 GHz)
-- Ka-band (26.5-40 GHz)
 
 Support for specific frequencies within these bands may vary. Consult the service documentation for the most current information on supported frequencies.
 

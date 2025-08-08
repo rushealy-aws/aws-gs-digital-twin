@@ -174,7 +174,7 @@ If behind a corporate firewall, ensure access to:
 
 Basic understanding of:
 - Orbital mechanics and satellite passes
-- Frequency bands (S-band, X-band, Ka-band)
+- Frequency bands (S-band, X-band)
 - Doppler shift and link budgets
 - Antenna pointing and tracking
 
