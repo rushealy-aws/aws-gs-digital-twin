@@ -6,34 +6,35 @@ This document outlines the step-by-step process for onboarding to AWS Ground Sta
 
 ### Step 1: Request Access
 
-1. Navigate to the AWS Ground Station console at https://console.aws.amazon.com/groundstation/
-2. Click on "Digital Twin" in the navigation pane
-3. If Digital Twin is not enabled for your account, you'll see an option to request access
-4. Complete the request form with the following details:
-   - AWS Account ID
-   - Primary contact information
-   - Use case description
-   - Satellite details
-   - Expected testing timeline
-5. Submit the request and wait for approval from the AWS Ground Station team
+To start onboarding your satellite to AWS Ground Station Digital Twin:
+
+1. Email `aws-groundstation@amazon.com` with a brief summary of your mission and satellite needs, including:
+   - Your organization name
+   - The frequencies required
+   - When the satellites will be or were launched
+   - The satellite's orbit type
+   - Confirmation that you plan to use the AWS Ground Station digital twin feature
+
+2. Once your request is reviewed and approved, AWS Ground Station will guide you through the onboarding process
+
+3. The onboarding process typically takes 1-3 business days after submitting your request
 
 ### Step 2: Initial Configuration
 
 Once your access request is approved:
 
-1. Log in to the AWS Ground Station console
-2. Navigate to the Digital Twin section
-3. Complete the initial setup wizard, which includes:
+1. Log in to the AWS Ground Station console at https://console.aws.amazon.com/groundstation/
+2. Navigate to the "Satellites and Resources" section
+3. Complete the initial setup, which includes:
    - Selecting your primary AWS region
    - Configuring default dataflow endpoints
    - Setting up notification preferences
-   - Accepting the service terms and conditions
 
 ## IAM Permissions
 
 ### Required IAM Policies
 
-Create an IAM policy with the following permissions:
+Create an IAM policy with the following permissions for AWS Ground Station Digital Twin:
 
 ```json
 {
@@ -51,7 +52,10 @@ Create an IAM policy with the following permissions:
         "ec2:DescribeVpcs",
         "s3:GetObject",
         "s3:PutObject",
-        "s3:ListBucket"
+        "s3:ListBucket",
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
       ],
       "Resource": "*"
     }
@@ -86,7 +90,7 @@ Create an IAM policy with the following permissions:
 
 ### VPC Requirements
 
-AWS Ground Station Digital Twin requires specific network configurations:
+AWS Ground Station Digital Twin requires specific network configurations for dataflow endpoints:
 
 1. Create or select a VPC with:
    - At least two subnets in different Availability Zones
@@ -101,65 +105,71 @@ AWS Ground Station Digital Twin requires specific network configurations:
      --vpc-id <vpc-id>
    ```
 
-3. Add inbound and outbound rules:
-   ```bash
-   aws ec2 authorize-security-group-ingress \
-     --group-id <security-group-id> \
-     --protocol tcp \
-     --port 55888 \
-     --cidr 0.0.0.0/0
-   ```
+3. Add inbound and outbound rules as needed for your dataflow endpoints
 
 ### Dataflow Endpoint Configuration
 
-1. Create S3 dataflow endpoints:
+Note: At this time, the digital twin feature does not support data delivery as described in the standard AWS Ground Station dataflows. However, you can configure endpoints for testing purposes.
+
+1. Create S3 dataflow endpoints for testing:
    ```bash
    aws groundstation create-dataflow-endpoint-group \
      --endpoint-details '[{
        "endpoint": {
          "name": "DigitalTwinS3Endpoint",
-         "awsS3": {
-           "bucketArn": "arn:aws:s3:::<your-bucket-name>",
-           "keyPattern": "digital-twin-data/{satellite_id}/{year}/{month}/{day}/{hour}/{minute}"
+         "address": {
+           "name": "<your-bucket-name>",
+           "port": 443
          }
        }
      }]' \
      --region <region>
    ```
 
-2. Create EC2 dataflow endpoints:
+## Satellite Configuration
+
+### Listing Available Ground Stations
+
+Once onboarded to the digital twin feature, you can retrieve the list of ground stations available to you:
+
+```bash
+aws groundstation list-ground-stations --region <region>
+```
+
+Digital twin ground stations are exact copies of the ground stations listed in AWS Ground Station Locations with a modifying prefix to Ground Station Name of "Digital Twin ". This includes their antenna capabilities and metadata, including site mask and actual GPS coordinates.
+
+### Satellite Tagging (Optional)
+
+You may want to add a name to your satellite record to more easily recognize it:
+
+1. Get the satellite ARN:
    ```bash
-   aws groundstation create-dataflow-endpoint-group \
-     --endpoint-details '[{
-       "endpoint": {
-         "name": "DigitalTwinEC2Endpoint",
-         "awsEc2": {
-           "securityGroupIds": ["<security-group-id>"],
-           "subnetId": "<subnet-id>"
-         }
-       }
-     }]' \
-     --region <region>
+   aws groundstation list-satellites --region <region>
+   ```
+
+2. Tag the satellite with a name:
+   ```bash
+   aws groundstation tag-resource \
+     --region <region> \
+     --resource-arn <satellite-arn> \
+     --tags '{"Name":"<satellite-name>"}'
    ```
 
 ## Verification
 
 After completing the onboarding steps:
 
-1. Verify IAM permissions:
+1. Verify satellite access:
    ```bash
-   aws groundstation get-config --config-id <config-id> --region <region>
+   aws groundstation list-satellites --region <region>
    ```
 
-2. Verify network configuration:
+2. Verify ground station access:
    ```bash
-   aws groundstation list-dataflow-endpoint-groups --region <region>
+   aws groundstation list-ground-stations --region <region>
    ```
 
-3. Verify Digital Twin access:
-   ```bash
-   aws groundstation list-digital-twin-simulations --region <region>
-   ```
+3. Check for digital twin ground stations (prefixed with "Digital Twin ")
 
 ## Next Steps
 
@@ -167,7 +177,7 @@ After successful onboarding, proceed to [Using AWS Ground Station Digital Twin](
 
 ## AWS Documentation References
 
-- [AWS Ground Station Getting Started Guide](https://docs.aws.amazon.com/ground-station/latest/ug/getting-started.html)
-- [AWS Ground Station IAM Permissions](https://docs.aws.amazon.com/ground-station/latest/ug/auth-and-access-control.html)
-- [AWS Ground Station Dataflow Endpoint Groups](https://docs.aws.amazon.com/ground-station/latest/ug/dataflow-endpoint-groups.html)
-- [AWS Ground Station VPC Requirements](https://docs.aws.amazon.com/ground-station/latest/ug/dataflow-endpoint-groups.html#dataflow-endpoint-groups-vpc)
+- [AWS Ground Station Digital Twin](https://docs.aws.amazon.com/ground-station/latest/ug/digital-twin.html)
+- [Onboard Satellite](https://docs.aws.amazon.com/ground-station/latest/ug/getting-started.step1.html)
+- [AWS Ground Station Locations](https://docs.aws.amazon.com/ground-station/latest/ug/aws-ground-station-antenna-locations.html)
+- [ListGroundStations API](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ListGroundStations.html)

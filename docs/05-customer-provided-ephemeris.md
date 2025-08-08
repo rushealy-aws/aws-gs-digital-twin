@@ -4,14 +4,9 @@ This document explains how to use customer-provided ephemeris data with AWS Grou
 
 ## Understanding Ephemeris Data
 
-Ephemeris data contains information about a satellite's position and velocity as a function of time. This data is crucial for:
+An ephemeris is a file or data structure providing the trajectory of astronomical objects. AWS Ground Station uses ephemeris data to determine when contacts become available for your satellite and correctly command antennas in the AWS Ground Station Network to point at your satellite.
 
-- Accurately predicting satellite passes
-- Planning contact schedules
-- Pointing antennas correctly
-- Calculating Doppler shifts
-
-In AWS Ground Station Digital Twin, you can provide your own ephemeris data to ensure simulations match your specific satellite parameters.
+In AWS Ground Station Digital Twin, you can provide your own ephemeris data to ensure simulations match your specific satellite parameters and improve simulation accuracy.
 
 ## Ephemeris Format
 
@@ -19,237 +14,214 @@ AWS Ground Station Digital Twin supports the following ephemeris formats:
 
 ### OEM (Orbit Ephemeris Message)
 
-The OEM format follows the CCSDS standard and includes:
-- Header information
-- Metadata section
-- State vectors (position and velocity)
+The OEM format follows the CCSDS standard with some AWS Ground Station-specific requirements:
+
+**Required Header Fields:**
+- `CCSDS_OEM_VERS = 2.0`
+- `CREATION_DATE`
+- `ORIGINATOR`
+
+**Required Metadata Fields:**
+- `OBJECT_NAME`
+- `OBJECT_ID`
+- `CENTER_NAME = Earth`
+- `REF_FRAME` (EME2000 or ITRF2000)
+- `TIME_SYSTEM = UTC`
+- `START_TIME`
+- `STOP_TIME`
+- `INTERPOLATION` (required for AWS Ground Station)
+- `INTERPOLATION_DEGREE` (required for AWS Ground Station)
+
+**Data Fields:**
+- Position: X, Y, Z (in km)
+- Velocity: X_DOT, Y_DOT, Z_DOT (in km/s)
 
 Example OEM file structure:
 ```
 CCSDS_OEM_VERS = 2.0
-CREATION_DATE = 2025-01-15T00:00:00
-ORIGINATOR = EXAMPLE
+CREATION_DATE = 2024-07-22T05:20:59
+ORIGINATOR = Example-Organization
 
 META_START
-OBJECT_NAME = EXAMPLESAT
-OBJECT_ID = 2025-001A
-CENTER_NAME = EARTH
+OBJECT_NAME = EXAMPLE-SAT
+OBJECT_ID = 2024-001A
+CENTER_NAME = Earth
 REF_FRAME = EME2000
 TIME_SYSTEM = UTC
-START_TIME = 2025-01-15T00:00:00.000
-STOP_TIME = 2025-01-16T00:00:00.000
+START_TIME = 2024-07-22T00:00:00.000000
+STOP_TIME = 2024-07-22T00:06:00.000000
+INTERPOLATION = Lagrange
+INTERPOLATION_DEGREE = 5
 META_STOP
 
-2025-01-15T00:00:00.000 -6800.0 1200.0 600.0 2.0 5.0 -3.0
-2025-01-15T01:00:00.000 -6600.0 1300.0 700.0 2.1 5.1 -2.9
-...
+2024-07-22T00:00:00.000000   590.5147360000000  -1860.082793999999  -6944.807075000000  -5.784245796000000   4.347501391999999  -1.657256863000000
+2024-07-22T00:01:00.000000   242.5572045154201  -1595.860765983339  -7030.938457373539  -5.810660250794190   4.457103652219009  -1.212889340333023
 ```
 
 ### TLE (Two-Line Element Set)
 
-TLE is a data format encoding a list of orbital elements for an Earth-orbiting object:
+TLE is a data format encoding orbital elements for an Earth-orbiting object. AWS Ground Station supports standard TLE format.
 
 Example TLE:
 ```
-EXAMPLESAT
-1 25544U 98067A   25015.50000000  .00000000  00000-0  00000-0 0  9990
-2 25544  51.6400  15.0000 0007000  0.0000 180.0000 15.50000000    00
+EXAMPLE SATELLITE
+1 25544U 98067A   24001.00000000  .00002182  00000-0  10270-4 0  9990
+2 25544  51.6461 339.7939 0001393  83.2776 276.9717 15.48919103123456
 ```
 
-### CPE (Customer-Provided Ephemeris)
-
-AWS Ground Station also supports a proprietary CPE format that includes:
-- Satellite identification
-- Time range
-- Position and velocity vectors
-- Additional metadata
+**Note:** When providing custom ephemeris before a satellite catalog number is assigned, you can use 00000 for the satellite catalog number field of the TLE.
 
 ## Uploading Ephemeris Data
 
-### Step 1: Prepare Your Ephemeris File
+### Prerequisites
 
-Ensure your ephemeris file follows one of the supported formats and covers the time period of your planned simulation.
+Access to the Ephemeris API is provided only on an as-needed basis. If you require the ability to upload custom ephemeris data, contact `aws-groundstation@amazon.com`.
 
-### Step 2: Upload to S3
+### Using the AWS CLI
 
-```bash
-# Upload OEM file
-aws s3 cp satellite_ephemeris.oem s3://your-bucket/ephemeris/
+1. **Create ephemeris from inline data:**
+   ```bash
+   aws groundstation create-ephemeris \
+     --name "example-ephemeris" \
+     --satellite-id "11111111-2222-3333-4444-555555555555" \
+     --enabled \
+     --priority 1 \
+     --ephemeris-data '{
+       "tle": {
+         "tleLine1": "1 25544U 98067A   24001.00000000  .00002182  00000-0  10270-4 0  9990",
+         "tleLine2": "2 25544  51.6461 339.7939 0001393  83.2776 276.9717 15.48919103123456"
+       }
+     }' \
+     --region us-west-2
+   ```
 
-# Upload TLE file
-aws s3 cp satellite_tle.txt s3://your-bucket/ephemeris/
-```
+2. **Create ephemeris from S3:**
+   ```bash
+   aws groundstation create-ephemeris \
+     --name "example-ephemeris-s3" \
+     --satellite-id "11111111-2222-3333-4444-555555555555" \
+     --enabled \
+     --priority 1 \
+     --ephemeris-data '{
+       "oem": {
+         "oemData": "s3://your-bucket/path/to/ephemeris.oem"
+       }
+     }' \
+     --region us-west-2
+   ```
 
-### Step 3: Register Ephemeris with Ground Station
-
-Using the AWS CLI:
-
-```bash
-aws groundstation register-ephemeris \
-  --satellite-id <satellite-id> \
-  --ephemeris-data '{
-    "oem": {
-      "s3Object": {
-        "bucket": "your-bucket",
-        "key": "ephemeris/satellite_ephemeris.oem"
-      }
-    }
-  }' \
-  --name "CustomEphemeris-2025-01" \
-  --priority 100 \
-  --region <region>
-```
-
-Using the AWS SDK (Python):
+### Using the AWS SDK (Python)
 
 ```python
 import boto3
 
 client = boto3.client('groundstation', region_name='us-west-2')
 
-response = client.register_ephemeris(
-    satelliteId='sat-1234567890abcdef0',
+response = client.create_ephemeris(
+    name='example-ephemeris',
+    satelliteId='11111111-2222-3333-4444-555555555555',
+    enabled=True,
+    priority=1,
     ephemerisData={
-        'oem': {
-            's3Object': {
-                'bucket': 'your-bucket',
-                'key': 'ephemeris/satellite_ephemeris.oem'
-            }
+        'tle': {
+            'tleLine1': '1 25544U 98067A   24001.00000000  .00002182  00000-0  10270-4 0  9990',
+            'tleLine2': '2 25544  51.6461 339.7939 0001393  83.2776 276.9717 15.48919103123456'
         }
-    },
-    name='CustomEphemeris-2025-01',
-    priority=100
+    }
 )
 
-ephemeris_id = response['ephemerisId']
-print(f"Registered ephemeris: {ephemeris_id}")
+print(f"Ephemeris ID: {response['ephemerisId']}")
 ```
 
 ## Ephemeris Validation
 
-AWS Ground Station Digital Twin automatically validates your ephemeris data upon registration. The validation process checks:
+After uploading, ephemeris data goes through validation:
 
-1. Format compliance
-2. Time range coverage
-3. Consistency of state vectors
-4. Orbital parameters within expected ranges
+1. **VALIDATING**: Initial validation and contact generation
+2. **ENABLED**: Ready for use
+3. **INVALID**: Failed validation
 
-### Checking Validation Status
+### Monitoring Ephemeris Status
 
 ```bash
 aws groundstation describe-ephemeris \
-  --ephemeris-id <ephemeris-id> \
-  --region <region>
+  --ephemeris-id "22222222-3333-4444-5555-666666666666" \
+  --region us-west-2
 ```
 
-The response includes a validation status:
-- `VALID`: Ephemeris passed all validation checks
-- `INVALID`: Ephemeris failed validation
-- `VALIDATING`: Validation in progress
+### Using CloudWatch Events
 
-### Validation Errors
+Set up CloudWatch Events to monitor ephemeris status changes:
 
-If your ephemeris is marked as `INVALID`, check the validation messages:
+```json
+{
+  "source": ["aws.groundstation"],
+  "detail-type": ["Ground Station Ephemeris State Change"],
+  "detail": {
+    "state": ["ENABLED", "INVALID"]
+  }
+}
+```
+
+## Best Practices
+
+### Update Frequency
+
+- **LEO satellites**: Update at least weekly
+- **MEO satellites**: Update at least monthly
+- **After maneuvers**: Update immediately
+- **When accuracy degrades**: Update when simulation results deviate from expected behavior
+
+### Data Quality
+
+1. Ensure ephemeris data covers the entire simulation period
+2. Use high-precision ephemeris when available
+3. Validate ephemeris data before uploading
+4. Monitor ephemeris expiration times
+
+### Priority Management
+
+- Higher priority ephemeris (lower number) takes precedence
+- Use priority 1 for most accurate/recent data
+- Use higher priority numbers for backup ephemeris
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Invalid format**: Ensure OEM follows CCSDS standard with AWS requirements
+2. **Missing required fields**: Check all required metadata fields are present
+3. **Time coverage**: Ensure ephemeris covers simulation time period
+4. **Coordinate system**: Use EME2000 or ITRF2000 reference frames
+
+### Getting Current Ephemeris
+
+Check which ephemeris is currently in use:
 
 ```bash
-aws groundstation list-ephemeris-validation-messages \
-  --ephemeris-id <ephemeris-id> \
-  --region <region>
+aws groundstation get-satellite \
+  --satellite-id "11111111-2222-3333-4444-555555555555" \
+  --region us-west-2
 ```
 
-Common validation errors include:
-- Time format issues
-- Gaps in coverage
-- Physically impossible state transitions
-- Reference frame inconsistencies
+### Reverting to Default Ephemeris
 
-## Using Custom Ephemeris in Simulations
-
-### Step 1: Create a Simulation with Custom Ephemeris
+To revert to default Space-Track ephemeris, disable all custom ephemeris:
 
 ```bash
-aws groundstation create-digital-twin-simulation \
-  --name "CustomEphemerisSimulation" \
-  --satellite-id <satellite-id> \
-  --mission-profile-id <mission-profile-id> \
-  --ground-stations <ground-station-list> \
-  --start-time <start-time> \
-  --end-time <end-time> \
-  --ephemeris-id <ephemeris-id> \
-  --region <region>
+aws groundstation update-ephemeris \
+  --ephemeris-id "22222222-3333-4444-5555-666666666666" \
+  --enabled false \
+  --region us-west-2
 ```
-
-### Step 2: Monitor Simulation with Custom Ephemeris
-
-1. Navigate to the Simulations section in the console
-2. Select your simulation
-3. View the "Ephemeris" tab to see:
-   - Source of ephemeris data
-   - Coverage period
-   - Validation status
-   - Orbital parameters derived from ephemeris
-
-## Advanced Ephemeris Features
-
-### Ephemeris Priority
-
-When multiple ephemeris sources are available, AWS Ground Station uses a priority system:
-
-1. Register ephemeris with priority values:
-```bash
-aws groundstation register-ephemeris \
-  --satellite-id <satellite-id> \
-  --ephemeris-data <ephemeris-data> \
-  --name "PrimaryEphemeris" \
-  --priority 200 \
-  --region <region>
-
-aws groundstation register-ephemeris \
-  --satellite-id <satellite-id> \
-  --ephemeris-data <ephemeris-data> \
-  --name "BackupEphemeris" \
-  --priority 100 \
-  --region <region>
-```
-
-Higher priority values take precedence when multiple valid ephemeris sources overlap.
-
-### Ephemeris Propagation
-
-For simulations extending beyond ephemeris coverage, AWS Ground Station can propagate orbits:
-
-```bash
-aws groundstation create-digital-twin-simulation \
-  --name "PropagatedSimulation" \
-  --satellite-id <satellite-id> \
-  --mission-profile-id <mission-profile-id> \
-  --ground-stations <ground-station-list> \
-  --start-time <start-time> \
-  --end-time <end-time> \
-  --ephemeris-id <ephemeris-id> \
-  --propagation-settings '{
-    "maxPropagationMinutes": 1440,
-    "propagationModel": "SGP4"
-  }' \
-  --region <region>
-```
-
-## Best Practices for Ephemeris Management
-
-1. **Regular Updates**: Upload fresh ephemeris data regularly to maintain accuracy
-2. **Overlap Coverage**: Ensure new ephemeris overlaps with previous data to avoid gaps
-3. **Validation**: Always check validation status before using in critical simulations
-4. **Priority Management**: Use priority settings to establish clear precedence rules
-5. **Time Range**: Provide ephemeris that extends beyond your simulation window
 
 ## Next Steps
 
-After learning how to use customer-provided ephemeris, proceed to [Troubleshooting](06-troubleshooting.md) to understand how to diagnose and resolve common issues with AWS Ground Station Digital Twin.
+After configuring ephemeris data, proceed to [Troubleshooting](06-troubleshooting.md) for common issues and solutions.
 
 ## AWS Documentation References
 
-- [AWS Ground Station Ephemeris Management](https://docs.aws.amazon.com/ground-station/latest/ug/ephemeris.html)
-- [AWS Ground Station API Reference - Register Ephemeris](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_RegisterEphemeris.html)
-- [AWS Ground Station API Reference - Describe Ephemeris](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_DescribeEphemeris.html)
-- [CCSDS Orbit Data Messages Standard](https://public.ccsds.org/Pubs/502x0b2c1.pdf)
-- [AWS Ground Station Simulation Parameters](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_CreateDigitalTwinSimulation.html)
+- [Understand how AWS Ground Station uses satellite ephemeris data](https://docs.aws.amazon.com/ground-station/latest/ug/ephemeris.html)
+- [Provide custom ephemeris data](https://docs.aws.amazon.com/ground-station/latest/ug/providing-custom-ephemeris-data.html)
+- [Default ephemeris data](https://docs.aws.amazon.com/ground-station/latest/ug/default-ephemeris-data.html)
+- [CreateEphemeris API](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_CreateEphemeris.html)

@@ -6,15 +6,25 @@ This document provides a comprehensive collection of resources to help you effec
 
 ### AWS Ground Station Documentation
 
-- [AWS Ground Station User Guide](https://docs.aws.amazon.com/ground-station/latest/ug/what-is-aws-ground-station.html)
-- [AWS Ground Station API Reference](https://docs.aws.amazon.com/ground-station/latest/APIReference/Welcome.html)
-- [AWS Ground Station Digital Twin Documentation](https://docs.aws.amazon.com/ground-station/latest/ug/digital-twin.html)
+- [What is AWS Ground Station?](https://docs.aws.amazon.com/ground-station/latest/ug/what-is.html)
+- [AWS Ground Station User Guide](https://docs.aws.amazon.com/ground-station/latest/ug/)
+- [AWS Ground Station API Reference](https://docs.aws.amazon.com/ground-station/latest/APIReference/)
+- [Use the AWS Ground Station digital twin feature](https://docs.aws.amazon.com/ground-station/latest/ug/digital-twin.html)
+- [Onboard satellite](https://docs.aws.amazon.com/ground-station/latest/ug/getting-started.step1.html)
+- [AWS Ground Station Locations](https://docs.aws.amazon.com/ground-station/latest/ug/aws-ground-station-antenna-locations.html)
+
+### Ephemeris Documentation
+
+- [Understand how AWS Ground Station uses satellite ephemeris data](https://docs.aws.amazon.com/ground-station/latest/ug/ephemeris.html)
+- [Provide custom ephemeris data](https://docs.aws.amazon.com/ground-station/latest/ug/providing-custom-ephemeris-data.html)
+- [Default ephemeris data](https://docs.aws.amazon.com/ground-station/latest/ug/default-ephemeris-data.html)
+- [Get the current ephemeris for a satellite](https://docs.aws.amazon.com/ground-station/latest/ug/getting-current-ephemeris.html)
 
 ### AWS CLI Documentation
 
 - [AWS CLI Command Reference for Ground Station](https://docs.aws.amazon.com/cli/latest/reference/groundstation/index.html)
-- [AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-- [AWS CLI Configuration Guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+- [Installing the AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [Configuring the AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
 ### AWS SDK Documentation
 
@@ -22,17 +32,158 @@ This document provides a comprehensive collection of resources to help you effec
 - [AWS SDK for Java - Ground Station](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/services/groundstation/package-summary.html)
 - [AWS SDK for JavaScript - Ground Station](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GroundStation.html)
 
-## Code Samples and Templates
+## API References
 
-### AWS CloudFormation Templates
+### Key APIs for Digital Twin
+
+- [ListGroundStations](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ListGroundStations.html) - List available ground stations
+- [ListSatellites](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ListSatellites.html) - List satellites
+- [GetSatellite](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_GetSatellite.html) - Get satellite details
+- [CreateEphemeris](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_CreateEphemeris.html) - Upload custom ephemeris
+- [DescribeEphemeris](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_DescribeEphemeris.html) - Check ephemeris status
+
+### Contact Management APIs
+
+- [ListContacts](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ListContacts.html) - List scheduled contacts
+- [DescribeContact](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_DescribeContact.html) - Get contact details
+- [ReserveContact](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ReserveContact.html) - Schedule a contact
+
+## Code Samples
+
+### Python Examples
+
+#### List Digital Twin Ground Stations
+
+```python
+import boto3
+
+client = boto3.client('groundstation', region_name='us-west-2')
+
+response = client.list_ground_stations()
+
+# Filter for digital twin ground stations
+digital_twin_stations = [
+    station for station in response['groundStationList']
+    if station['groundStationName'].startswith('Digital Twin ')
+]
+
+for station in digital_twin_stations:
+    print(f"Ground Station: {station['groundStationName']}")
+    print(f"ID: {station['groundStationId']}")
+    print(f"Region: {station['region']}")
+    print("---")
+```
+
+#### Upload TLE Ephemeris
+
+```python
+import boto3
+
+client = boto3.client('groundstation', region_name='us-west-2')
+
+response = client.create_ephemeris(
+    name='example-tle-ephemeris',
+    satelliteId='your-satellite-id',
+    enabled=True,
+    priority=1,
+    ephemerisData={
+        'tle': {
+            'tleLine1': '1 25544U 98067A   24001.00000000  .00002182  00000-0  10270-4 0  9990',
+            'tleLine2': '2 25544  51.6461 339.7939 0001393  83.2776 276.9717 15.48919103123456'
+        }
+    }
+)
+
+print(f"Ephemeris created with ID: {response['ephemerisId']}")
+```
+
+#### Monitor Ephemeris Status
+
+```python
+import boto3
+import time
+
+client = boto3.client('groundstation', region_name='us-west-2')
+
+def wait_for_ephemeris_enabled(ephemeris_id, max_wait_time=300):
+    start_time = time.time()
+    
+    while time.time() - start_time < max_wait_time:
+        response = client.describe_ephemeris(ephemerisId=ephemeris_id)
+        status = response['status']
+        
+        print(f"Ephemeris status: {status}")
+        
+        if status == 'ENABLED':
+            print("Ephemeris is ready for use!")
+            return True
+        elif status == 'INVALID':
+            print("Ephemeris validation failed!")
+            return False
+        
+        time.sleep(10)
+    
+    print("Timeout waiting for ephemeris to be enabled")
+    return False
+
+# Usage
+ephemeris_id = 'your-ephemeris-id'
+wait_for_ephemeris_enabled(ephemeris_id)
+```
+
+### AWS CLI Examples
+
+#### List Satellites
+
+```bash
+# List all satellites
+aws groundstation list-satellites --region us-west-2
+
+# Get specific satellite details
+aws groundstation get-satellite \
+  --satellite-id "11111111-2222-3333-4444-555555555555" \
+  --region us-west-2
+```
+
+#### Tag a Satellite
+
+```bash
+# Add a name tag to a satellite
+aws groundstation tag-resource \
+  --region us-west-2 \
+  --resource-arn "arn:aws:groundstation:us-west-2:123456789012:satellite/11111111-2222-3333-4444-555555555555" \
+  --tags '{"Name":"My-Satellite"}'
+```
+
+#### Create Ephemeris from S3
+
+```bash
+aws groundstation create-ephemeris \
+  --name "s3-ephemeris-example" \
+  --satellite-id "11111111-2222-3333-4444-555555555555" \
+  --enabled \
+  --priority 1 \
+  --ephemeris-data '{
+    "oem": {
+      "oemData": "s3://my-bucket/ephemeris/satellite.oem"
+    }
+  }' \
+  --region us-west-2
+```
+
+## CloudFormation Templates
+
+### Basic IAM Role for Ground Station
 
 ```yaml
-# Example CloudFormation template for setting up Ground Station Digital Twin resources
 AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM role for AWS Ground Station Digital Twin'
+
 Resources:
   GroundStationRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: GroundStationDigitalTwinRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -40,244 +191,130 @@ Resources:
             Principal:
               Service: groundstation.amazonaws.com
             Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        
-  DataBucket:
+      Policies:
+        - PolicyName: GroundStationDigitalTwinPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+Outputs:
+  RoleArn:
+    Description: 'ARN of the Ground Station role'
+    Value: !GetAtt GroundStationRole.Arn
+```
+
+### S3 Bucket for Ephemeris Data
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 bucket for storing ephemeris data'
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: 'groundstation-ephemeris-data'
+    Description: 'Name for the S3 bucket'
+
+Resources:
+  EphemerisBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub 'groundstation-digital-twin-${AWS::AccountId}'
-      
-  DataflowEndpointGroup:
-    Type: AWS::GroundStation::DataflowEndpointGroup
-    Properties:
-      EndpointDetails:
-        - AwsS3:
-            BucketArn: !GetAtt DataBucket.Arn
-            KeyPattern: 'digital-twin-data/{satellite_id}/{year}/{month}/{day}/{hour}/{minute}'
-          Name: DigitalTwinS3Endpoint
+      BucketName: !Sub '${BucketName}-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+Outputs:
+  BucketName:
+    Description: 'Name of the created S3 bucket'
+    Value: !Ref EphemerisBucket
+  BucketArn:
+    Description: 'ARN of the created S3 bucket'
+    Value: !GetAtt EphemerisBucket.Arn
 ```
 
-### Python SDK Examples
+## Monitoring and Logging
 
-```python
-# Example: Creating a Digital Twin simulation
-import boto3
-import datetime
+### CloudWatch Log Groups
 
-# Initialize the Ground Station client
-client = boto3.client('groundstation', region_name='us-west-2')
+AWS Ground Station Digital Twin logs are available in:
+- `/aws/groundstation/digital-twin` - Digital twin simulation logs
+- `/aws/groundstation/contacts` - Contact execution logs
 
-# Create a simulation
-response = client.create_digital_twin_simulation(
-    name='TestSimulation',
-    satelliteId='sat-1234567890abcdef0',
-    missionProfileId='mp-1234567890abcdef0',
-    groundStations=['Ohio-1', 'Oregon-2'],
-    startTime=datetime.datetime.now() + datetime.timedelta(hours=1),
-    endTime=datetime.datetime.now() + datetime.timedelta(hours=2),
-    parameters={
-        'signalStrength': 'NOMINAL',
-        'interference': 'LOW',
-        'weatherCondition': 'CLEAR'
-    }
-)
+### CloudWatch Events
 
-simulation_id = response['simulationId']
-print(f"Created simulation: {simulation_id}")
+Monitor ephemeris and contact events:
 
-# Monitor simulation status
-def check_simulation_status(simulation_id):
-    response = client.get_digital_twin_simulation(
-        simulationId=simulation_id
-    )
-    return response['status']
-
-# List all simulations
-def list_simulations():
-    response = client.list_digital_twin_simulations()
-    for simulation in response['simulations']:
-        print(f"ID: {simulation['simulationId']}, Name: {simulation['name']}, Status: {simulation['status']}")
+```json
+{
+  "source": ["aws.groundstation"],
+  "detail-type": [
+    "Ground Station Ephemeris State Change",
+    "Ground Station Contact State Change"
+  ]
+}
 ```
 
-### AWS CLI Script Examples
+## Troubleshooting Resources
 
-```bash
-#!/bin/bash
-# Example script for managing Digital Twin simulations
+### Common Error Codes
 
-# Set variables
-REGION="us-west-2"
-SATELLITE_ID="sat-1234567890abcdef0"
-MISSION_PROFILE_ID="mp-1234567890abcdef0"
-GROUND_STATION="Ohio-1"
+- `AccessDeniedException` - Check IAM permissions
+- `ValidationException` - Verify input parameters
+- `ResourceNotFoundException` - Confirm resource exists in correct region
+- `LimitExceededException` - Request quota increase
 
-# Calculate start and end times (1 hour from now, lasting 1 hour)
-START_TIME=$(date -u -v+1H +"%Y-%m-%dT%H:%M:%SZ")
-END_TIME=$(date -u -v+2H +"%Y-%m-%dT%H:%M:%SZ")
+### Support Channels
 
-# Create simulation
-echo "Creating simulation..."
-SIMULATION_ID=$(aws groundstation create-digital-twin-simulation \
-  --name "CLI-TestSimulation" \
-  --satellite-id "$SATELLITE_ID" \
-  --mission-profile-id "$MISSION_PROFILE_ID" \
-  --ground-stations "$GROUND_STATION" \
-  --start-time "$START_TIME" \
-  --end-time "$END_TIME" \
-  --region "$REGION" \
-  --query "simulationId" \
-  --output text)
+1. **AWS Support** - For customers with support plans
+2. **AWS Documentation** - Comprehensive guides and references
+3. **AWS Forums** - Community support and discussions
+4. **AWS Ground Station Team** - Contact aws-groundstation@amazon.com for onboarding
 
-echo "Created simulation: $SIMULATION_ID"
-
-# Check simulation status
-echo "Checking simulation status..."
-aws groundstation get-digital-twin-simulation \
-  --simulation-id "$SIMULATION_ID" \
-  --region "$REGION" \
-  --query "status"
-
-# List all simulations
-echo "Listing all simulations..."
-aws groundstation list-digital-twin-simulations \
-  --region "$REGION"
-```
-
-## Sample Ephemeris Files
-
-### OEM (Orbit Ephemeris Message) Example
-
-```
-CCSDS_OEM_VERS = 2.0
-CREATION_DATE = 2025-01-15T00:00:00
-ORIGINATOR = EXAMPLE
-
-META_START
-OBJECT_NAME = EXAMPLESAT
-OBJECT_ID = 2025-001A
-CENTER_NAME = EARTH
-REF_FRAME = EME2000
-TIME_SYSTEM = UTC
-START_TIME = 2025-01-15T00:00:00.000
-STOP_TIME = 2025-01-16T00:00:00.000
-META_STOP
-
-2025-01-15T00:00:00.000 -6800.0 1200.0 600.0 2.0 5.0 -3.0
-2025-01-15T01:00:00.000 -6600.0 1300.0 700.0 2.1 5.1 -2.9
-2025-01-15T02:00:00.000 -6400.0 1400.0 800.0 2.2 5.2 -2.8
-2025-01-15T03:00:00.000 -6200.0 1500.0 900.0 2.3 5.3 -2.7
-```
-
-### TLE (Two-Line Element Set) Example
-
-```
-EXAMPLESAT
-1 25544U 98067A   25015.50000000  .00000000  00000-0  00000-0 0  9990
-2 25544  51.6400  15.0000 0007000  0.0000 180.0000 15.50000000    00
-```
-
-## Tutorials and Workshops
-
-### Step-by-Step Tutorials
-
-1. **Getting Started with AWS Ground Station Digital Twin**
-   - [AWS Ground Station Workshop](https://workshops.aws/categories/Satellite)
-   - [Digital Twin First Steps Guide](https://aws.amazon.com/blogs/aws/category/satellite/)
-
-2. **Advanced Digital Twin Configuration**
-   - [Configuring Complex Simulations](https://aws.amazon.com/blogs/aws/category/satellite/)
-   - [Multi-Satellite Constellation Testing](https://aws.amazon.com/blogs/aws/category/satellite/)
-
-3. **Integration Tutorials**
-   - [Integrating Digital Twin with CI/CD Pipelines](https://aws.amazon.com/blogs/devops/)
-   - [Automating Digital Twin Testing](https://aws.amazon.com/blogs/devops/)
-
-### Video Tutorials
-
-- [AWS Ground Station Digital Twin Overview](https://www.youtube.com/aws)
-- [Configuring Uplink in Digital Twin](https://www.youtube.com/aws)
-- [Working with Custom Ephemeris](https://www.youtube.com/aws)
-- [Troubleshooting Common Issues](https://www.youtube.com/aws)
-
-## Community Resources
-
-### Forums and Discussion Groups
-
-- [AWS Ground Station Forum](https://forums.aws.amazon.com/)
-- [Stack Overflow - AWS Ground Station Tags](https://stackoverflow.com/questions/tagged/aws-ground-station)
-- [Reddit - r/AWS](https://www.reddit.com/r/aws/)
-
-### Blogs and Articles
-
-- [AWS Ground Station Blog](https://aws.amazon.com/blogs/aws/category/satellite/)
-- [AWS Architecture Blog - Satellite Communications](https://aws.amazon.com/blogs/architecture/)
-- [AWS Partner Network Blog - Space Partners](https://aws.amazon.com/blogs/apn/)
-
-## Tools and Utilities
-
-### Monitoring and Visualization
-
-- [CloudWatch Dashboard Templates for Ground Station](https://github.com/aws-samples/)
-- [Grafana Dashboard for Satellite Telemetry](https://grafana.com/grafana/dashboards/)
-
-### Automation Tools
-
-- [AWS Ground Station Automation Scripts](https://github.com/aws-samples/)
-- [Terraform Modules for AWS Ground Station](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/groundstation_config)
-
-## Reference Materials
-
-### Satellite Communications Fundamentals
-
-- [Introduction to Satellite Communications](https://www.nasa.gov/directorates/heo/scan/communications/outreach/funfacts/txt_satellite_comm.html)
-- [Orbital Mechanics Primer](https://www.grc.nasa.gov/www/k-12/rocket/orbmech.html)
-- [Satellite Link Budget Calculations](https://www.satellitetoday.com/telecom/2002/02/01/link-budget-101/)
+## External Resources
 
 ### Standards and Specifications
 
-- [CCSDS Standards](https://public.ccsds.org/Publications/BlueBooks.aspx)
-- [TLE Format Specification](https://celestrak.org/NORAD/documentation/tle-fmt.php)
-- [OEM Format Specification](https://public.ccsds.org/Pubs/502x0b2c1.pdf)
+- [CCSDS OEM Standard](https://ccsds.org/wp-content/uploads/gravity_forms/5-448e85c647331d9cbaf66c096458bdd5/2025/01//502x0b3e1.pdf) - Orbit Ephemeris Message format
+- [Two-Line Element Set](https://en.wikipedia.org/wiki/Two-line_element_set) - TLE format specification
+- [Space-Track.org](https://www.space-track.org/) - Source of default ephemeris data
 
-## Training and Certification
+### Industry Resources
 
-### AWS Training
+- [AWS Satellite Blog](https://aws.amazon.com/blogs/aws/category/satellite/) - Latest updates and use cases
+- [AWS re:Invent Sessions](https://www.youtube.com/results?search_query=aws+reinvent+ground+station) - Technical presentations
+- [AWS Workshops](https://workshops.aws/) - Hands-on learning experiences
 
-- [AWS Ground Station Technical Training](https://aws.amazon.com/training/)
-- [AWS Certified Solutions Architect](https://aws.amazon.com/certification/certified-solutions-architect-associate/)
-- [AWS Technical Essentials](https://aws.amazon.com/training/course-descriptions/essentials/)
+## Getting Help
 
-### Partner Training
+### Before Contacting Support
 
-- [AWS Partner Ground Station Training](https://aws.amazon.com/partners/training/)
-- [Satellite Communications Certification Programs](https://www.sae.org/learn/content/c1603/)
-
-## Support Resources
-
-### AWS Support
-
-- [AWS Support Center](https://console.aws.amazon.com/support/home)
-- [AWS Premium Support](https://aws.amazon.com/premiumsupport/)
-- [AWS Service Health Dashboard](https://status.aws.amazon.com/)
+1. Check the [troubleshooting guide](06-troubleshooting.md)
+2. Review CloudWatch logs for error details
+3. Verify IAM permissions and resource configurations
+4. Consult the FAQ section
 
 ### Contact Information
 
-- [AWS Sales Contact](https://aws.amazon.com/contact-us/)
-- [AWS Ground Station Team Contact](https://aws.amazon.com/ground-station/contact-us/)
-- [AWS Partner Network Contact](https://aws.amazon.com/partners/contact/)
+- **General inquiries**: aws-groundstation@amazon.com
+- **Technical support**: Through your AWS Support plan
+- **Documentation feedback**: Use the feedback links in AWS documentation
 
-## Glossary
+## Next Steps
 
-| Term | Definition |
-|------|------------|
-| AWS Ground Station | A fully managed service that lets you control satellite communications, process data, and scale your operations |
-| Digital Twin | A virtual representation of a physical system, in this case a simulation of satellite communications |
-| Ephemeris | Data describing the position and velocity of a satellite over time |
-| Uplink | Transmission of data from a ground station to a satellite |
-| Downlink | Transmission of data from a satellite to a ground station |
-| Contact | A scheduled period when a ground station can communicate with a satellite |
-| Mission Profile | A configuration that defines how AWS Ground Station interacts with a satellite |
-| Dataflow Endpoint | A destination for data received from a satellite or a source for data to be transmitted to a satellite |
-| TLE | Two-Line Element set, a data format for describing orbital elements |
-| OEM | Orbit Ephemeris Message, a standard format for exchanging orbit information |
+- Review the [Best Practices](07-best-practices.md) guide
+- Explore the [FAQ](08-faq.md) for common questions
+- Start with the [Prerequisites](01-prerequisites.md) if you're new to AWS Ground Station Digital Twin
