@@ -1,8 +1,8 @@
-# AWS Ground Station Digital Twin Getting Started Guide
+# AWS Ground Station Digital Twin - Getting Started Guide
 
 This repository contains comprehensive documentation for getting started with AWS Ground Station Digital Twin, including onboarding steps, usage guides for uplink and customer-provided ephemeris, and detailed troubleshooting procedures.
 
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Table of Contents
 
@@ -34,6 +34,6 @@ This repository contains comprehensive documentation for getting started with AW
 
 ## Introduction
 
-AWS Ground Station Digital Twin is a feature of the AWS Ground Station service that allows you to test and validate your satellite communications workflows in a simulated environment before deploying to production. This guide helps you get started with the AWS Ground Station service, configure uplink capabilities, work with customer-provided ephemeris (CPE) data, and troubleshoot common issues.
+AWS Ground Station Digital Twin provides an environment where you can test and integrate your satellite mission management and command and control software. The digital twin feature allows you to test scheduling, verification of configurations, and proper error handling without using production antenna capacity. Testing your AWS Ground Station integration with the digital twin feature enables you to have increased confidence in your system's ability to manage your satellite operations smoothly. It also allows you to test AWS Ground Station APIs without using production capacity or requiring spectrum licensing.
 
 For more detailed information, refer to the specific documentation sections in this repository.
