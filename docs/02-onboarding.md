@@ -13,7 +13,7 @@ The AWS Ground Station digital twin feature provides an environment where you ca
 To start onboarding your satellite to AWS Ground Station Digital Twin:
 
 1. Follow the standard [Onboard satellite](https://docs.aws.amazon.com/ground-station/latest/ug/getting-started.step1.html) process
-2. In your onboarding request to `aws-groundstation@amazon.com`, include:
+2. In your onboarding request to `aws-groundstation@amazon.com` or your AWS account team (preferred), include:
    - Your organization name
    - The frequencies required
    - When the satellites will be or were launched
