@@ -5,7 +5,7 @@ Before you begin using AWS Ground Station Digital Twin, ensure you have the foll
 ## AWS Account Requirements
 
 - An active AWS account with appropriate permissions. Note: This account may not be onboarded (previously or in the future) to the AWS Ground Station service for production use.
-- AWS Ground Station service access (contact aws-groundstation@amazon.com for onboarding)
+- AWS Ground Station service access (contact aws-groundstation@amazon.com or your AWS account team--Account Manager and Solutions Architect **preferred** onboarding)
 - Service quotas reviewed and increased if necessary
 - Understanding of satellite communications concepts
 
