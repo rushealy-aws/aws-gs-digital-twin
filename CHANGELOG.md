@@ -2,6 +2,69 @@
 
 All notable changes to the AWS Ground Station Digital Twin Guide.
 
+## [2.1.0] - 2025-12-09
+
+### Changed
+- **Complete Documentation Refresh**: Updated all core documentation files using latest AWS official documentation
+- **AWS CLI Installation**: Updated to AWS CLI v2 with current installation instructions for macOS, Linux, and Windows
+- **Regional Availability**: Updated with current AWS Ground Station regions and endpoints
+- **Service Quotas**: Added current AWS Ground Station service quotas and limits
+- **API References**: Updated all API examples with latest parameters and best practices
+
+### Updated Files
+
+#### Core Documentation
+- `README.md`: Complete rewrite with current Digital Twin features, use cases, and sample code
+- `docs/01-prerequisites.md`: Updated AWS CLI v2 installation, SDK versions, regional availability, and service quotas
+- `docs/02-onboarding.md`: Updated onboarding process, digital twin ground station characteristics, and EventBridge integration
+- `docs/03-using-digital-twin.md`: Updated API references, contact states, EventBridge patterns, and monitoring best practices
+
+### Key Updates
+
+#### Prerequisites
+- AWS CLI v2 installation instructions for all platforms
+- Python 3.8+ requirement (updated from 3.7+)
+- Current AWS SDK versions (Boto3 1.26.0+, AWS SDK for JavaScript v3)
+- Updated service quotas table with adjustable limits
+- macOS 11+ support requirement for AWS CLI v2
+
+#### Onboarding
+- Clarified digital twin onboarding request process
+- Added digital twin ground station naming convention details
+- Updated mission profile configuration examples
+- Added EventBridge integration setup
+- Included verification and testing procedures
+
+#### Using Digital Twin
+- Added complete contact state lifecycle table
+- Updated API examples for ListGroundStations, ReserveContact, DescribeContact
+- Added EventBridge event patterns for monitoring
+- Included best practices for contact scheduling
+- Added troubleshooting section with common issues
+
+#### README
+- Added "What is AWS Ground Station Digital Twin?" section
+- Included key benefits and important limitations
+- Added use cases (pre-launch testing, configuration changes, DevOps integration)
+- Updated sample code for Python and AWS CLI
+- Added comprehensive resource links to AWS documentation
+
+### AWS Documentation Sources
+All updates verified against official AWS documentation:
+- [Use the AWS Ground Station digital twin feature](https://docs.aws.amazon.com/ground-station/latest/ug/digital-twin.html)
+- [Installing or updating to the latest version of the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [AWS Ground Station endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/gs.html)
+- [ReserveContact API](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_ReserveContact.html)
+- [DescribeContact API](https://docs.aws.amazon.com/ground-station/latest/APIReference/API_DescribeContact.html)
+- [Automate AWS Ground Station with Events](https://docs.aws.amazon.com/ground-station/latest/ug/monitoring.automating-events.html)
+
+### Technical Improvements
+- All code samples verified against current AWS APIs
+- Updated Python examples for current boto3 version
+- CLI examples tested with AWS CLI v2
+- Added contact state management best practices
+- Improved EventBridge integration examples
+
 ## [2.0.0] - 2025-08-08
 
 ### Changed
