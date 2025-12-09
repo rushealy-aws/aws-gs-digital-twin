@@ -11,41 +11,67 @@ Before you begin using AWS Ground Station Digital Twin, ensure you have the foll
 
 ## Regional Availability
 
-AWS Ground Station Digital Twin is available in regions where AWS Ground Station is supported. For the most current list of supported regions, refer to the [AWS Ground Station documentation](https://docs.aws.amazon.com/ground-station/latest/ug/what-is.html).
+AWS Ground Station Digital Twin is available in all AWS Regions where AWS Ground Station is supported. The digital twin feature is available at the following AWS Ground Station locations:
+
+- US East (Ohio, N. Virginia)
+- US West (Oregon, Hawaii, Alaska)
+- Africa (Cape Town)
+- Asia Pacific (Seoul, Singapore, Sydney)
+- Europe (Frankfurt, Ireland, Stockholm)
+- Middle East (Bahrain)
+- South America (São Paulo)
+
+For the most current list of supported regions and endpoints, refer to the [AWS Ground Station endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/gs.html) documentation.
 
 ## Technical Requirements
 
-- AWS CLI installed and configured (version 2.0 or later recommended)
-- Python 3.7 or later (for SDK usage)
+- AWS CLI version 2 installed and configured
+- Python 3.8 or later (for SDK usage)
 - AWS SDK for your preferred programming language
 - Network connectivity to AWS Ground Station endpoints
 - Basic understanding of satellite orbital mechanics
 
 ## Installing the AWS CLI
 
-The AWS Command Line Interface (CLI) is essential for interacting with AWS Ground Station Digital Twin. Follow these steps to install and configure it:
+The AWS Command Line Interface (CLI) version 2 is essential for interacting with AWS Ground Station Digital Twin.
 
 ### Installation
 
 #### macOS
-```bash
-# Using Homebrew
-brew install awscli
 
-# Or download the official installer
+**GUI Installer (Recommended)**
+1. Download the macOS pkg file: [https://awscli.amazonaws.com/AWSCLIV2.pkg](https://awscli.amazonaws.com/AWSCLIV2.pkg)
+2. Run the downloaded file and follow the on-screen instructions
+3. The installer automatically creates a symlink at `/usr/local/bin/aws`
+
+**Command Line Installer**
+```bash
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 sudo installer -pkg AWSCLIV2.pkg -target /
 ```
 
+**Note**: AWS CLI version 2 supports macOS 11 and later.
+
 #### Linux
+
+**Quick Installation**
 ```bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 ```
 
+**To Update Existing Installation**
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+```
+
 #### Windows
-Download and run the AWS CLI MSI installer from the [AWS CLI download page](https://aws.amazon.com/cli/).
+
+Download and run the AWS CLI MSI installer:
+[https://awscli.amazonaws.com/AWSCLIV2.msi](https://awscli.amazonaws.com/AWSCLIV2.msi)
 
 ### Configuration
 
@@ -103,7 +129,7 @@ Your AWS user or role needs the following permissions for AWS Ground Station Dig
 }
 ```
 
-### Extended Permissions for Ephemeris Management
+### Extended Permissions for Full Digital Twin Access
 
 ```json
 {
@@ -131,14 +157,24 @@ Your AWS user or role needs the following permissions for AWS Ground Station Dig
 
 ### Python (Boto3)
 
+Install the latest version of Boto3:
+
 ```bash
 pip install boto3
 ```
 
-### Node.js
+Or specify a minimum version:
 
 ```bash
-npm install aws-sdk
+pip install 'boto3>=1.26.0'
+```
+
+### Node.js
+
+Install the AWS SDK for JavaScript v3:
+
+```bash
+npm install @aws-sdk/client-groundstation
 ```
 
 ### Java
@@ -158,7 +194,7 @@ Add to your Maven `pom.xml`:
 ### Outbound Connectivity
 
 Ensure your environment can reach:
-- AWS Ground Station API endpoints
+- AWS Ground Station API endpoints (HTTPS port 443)
 - Amazon S3 (for ephemeris data storage)
 - CloudWatch Logs (for monitoring)
 
@@ -205,15 +241,34 @@ export AWS_PROFILE=groundstation
 export GS_SATELLITE_ID=your-satellite-id
 ```
 
+## Service Quotas
+
+AWS Ground Station has the following default service quotas:
+
+| Quota | Default Value | Adjustable |
+|-------|--------------|------------|
+| Configs | 100 | Yes |
+| Contact Lead Time Maximum | 7 days | Yes |
+| Dataflow Endpoint Groups | 100 | Yes |
+| Dataflow Endpoints per Group | 20 | Yes |
+| Enabled Ephemerides | 30 | Yes |
+| Maximum Contact Duration | 20 minutes | Yes |
+| Mission Profiles | 100 | Yes |
+| Scheduled Contacts | 100 | Yes |
+| Scheduled Minutes | 1,000 | Yes |
+
+To request quota increases, use the [Service Quotas console](https://console.aws.amazon.com/servicequotas/).
+
 ## Verification Checklist
 
 Before proceeding to onboarding, verify:
 
-- [ ] AWS CLI installed and configured
+- [ ] AWS CLI version 2 installed and configured
 - [ ] AWS account has appropriate permissions
 - [ ] Network connectivity to AWS services confirmed
 - [ ] Basic satellite communications knowledge acquired
 - [ ] Development environment set up
+- [ ] Service quotas reviewed
 
 ## Getting Help
 
@@ -230,7 +285,7 @@ Once all prerequisites are met, proceed to [Onboarding](02-onboarding.md) to beg
 
 ## AWS Documentation References
 
-- [Installing the AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-- [Configuring the AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+- [Installing or updating to the latest version of the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [AWS Ground Station endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/gs.html)
 - [AWS Ground Station User Guide](https://docs.aws.amazon.com/ground-station/latest/ug/)
 - [AWS IAM User Guide](https://docs.aws.amazon.com/iam/)
