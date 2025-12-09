@@ -112,7 +112,7 @@ AWS Ground Station Digital Twin requires specific network configurations for dat
 
 ### Dataflow Endpoint Configuration
 
-**Important Note**: At this time, the digital twin feature does not support data delivery as described in the standard AWS Ground Station dataflows. However, you can configure endpoints for testing purposes to validate your configurations.
+**Important Note**: At this time, **the digital twin feature does not support data delivery as described in the standard AWS Ground Station dataflows.** However, you can configure endpoints for testing purposes to validate your configurations.
 
 1. Create dataflow endpoint groups for testing:
    ```bash
